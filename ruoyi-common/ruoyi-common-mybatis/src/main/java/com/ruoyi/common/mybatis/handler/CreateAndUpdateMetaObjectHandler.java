@@ -3,9 +3,11 @@ package com.ruoyi.common.mybatis.handler;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpStatus;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.ruoyi.common.core.enums.UserType;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+import com.ruoyi.common.core.web.domain.LsBaseEntity;
 import com.ruoyi.common.satoken.utils.LoginHelper;
 import com.ruoyi.system.api.model.LoginUser;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,23 @@ public class CreateAndUpdateMetaObjectHandler implements MetaObjectHandler {
                 baseEntity.setCreateBy(username);
                 // 当前已登录 且 更新人为空 则填充
                 baseEntity.setUpdateBy(username);
+            }
+            if (ObjectUtil.isNotNull(metaObject) && metaObject.getOriginalObject() instanceof LsBaseEntity) {
+                LsBaseEntity baseEntity = (LsBaseEntity) metaObject.getOriginalObject();
+                Date current = ObjectUtil.isNotNull(baseEntity.getCreateTime())
+                    ? baseEntity.getCreateTime() : new Date();
+                baseEntity.setCreateTime(current);
+                baseEntity.setUpdateTime(current);
+                String username = StringUtils.isNotBlank(baseEntity.getCreateUserName())
+                    ? baseEntity.getCreateUserName() : getLoginUsername();
+                String userId = StringUtils.isNotBlank(baseEntity.getCreateUserId())
+                    ? baseEntity.getCreateUserId() : getLoginUserId();
+                // 当前已登录 且 创建人为空 则填充
+                baseEntity.setCreateUserId(userId);
+                baseEntity.setCreateUserName(username);
+                // 当前已登录 且 更新人为空 则填充
+                baseEntity.setUpdateUserId(userId);
+                baseEntity.setUpdateUserName(username);
             }
         } catch (Exception e) {
             throw new ServiceException("自动注入异常 => " + e.getMessage(), HttpStatus.HTTP_UNAUTHORIZED);
@@ -74,6 +93,25 @@ public class CreateAndUpdateMetaObjectHandler implements MetaObjectHandler {
             return null;
         }
         return ObjectUtil.isNotNull(loginUser) ? loginUser.getUsername() : null;
+    }
+
+    /**
+     * 获取登录用户id
+     */
+    private String getLoginUserId() {
+        LoginUser loginUser;
+        try {
+            /*if (UserType.SYS_SUPPLIER == LoginHelper.getUserType()) {
+                //供应商门户端-自动注入新建人和更新人
+                loginUser = LoginHelper.getLoginSupplier();
+            } else {*/
+                loginUser = LoginHelper.getLoginUser();
+            //}
+        } catch (Exception e) {
+            log.warn("自动注入警告 => 用户未登录");
+            return null;
+        }
+        return ObjectUtil.isNotNull(loginUser) ? String.valueOf(loginUser.getUserId()) : null;
     }
 
 }

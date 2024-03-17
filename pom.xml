@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ruoyi</groupId>
-    <artifactId>ruoyi-cloud-plus</artifactId>
+    <artifactId>yg-practice-cloud</artifactId>
     <version>1.8.2</version>
 
     <name>RuoYi-Cloud-Plus</name>
@@ -79,6 +79,21 @@
                 <nacos.config.group>DEFAULT_GROUP</nacos.config.group>
                 <logstash.address>127.0.0.1:4560</logstash.address>
             </properties>
+        </profile>
+        <profile>
+            <id>local</id>
+            <properties>
+                <!-- 环境标识，需要与配置文件的名称相对应 -->
+                <profiles.active>chenj_local</profiles.active>
+                <nacos.server>192.168.8.132:8848</nacos.server>
+                <nacos.discovery.group>DEFAULT_GROUP</nacos.discovery.group>
+                <nacos.config.group>DEFAULT_GROUP</nacos.config.group>
+                <logstash.address>127.0.0.1:4560</logstash.address>
+            </properties>
+            <activation>
+                <!-- 默认环境 -->
+                <activeByDefault>true</activeByDefault>
+            </activation>
         </profile>
     </profiles>
 

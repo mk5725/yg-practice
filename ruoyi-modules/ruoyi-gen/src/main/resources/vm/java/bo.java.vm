@@ -12,7 +12,7 @@ import java.util.Date;
 import ${import};
 #end
 #if($table.crud || $table.sub)
-import com.ruoyi.common.core.web.domain.BaseEntity;
+import com.ruoyi.common.core.web.domain.LsBaseEntity;
 #elseif($table.tree)
 import com.ruoyi.common.core.web.domain.TreeEntity;
 #end
@@ -24,7 +24,7 @@ import com.ruoyi.common.core.web.domain.TreeEntity;
  * @date ${datetime}
  */
 #if($table.crud || $table.sub)
-#set($Entity="BaseEntity")
+#set($Entity="LsBaseEntity")
 #elseif($table.tree)
 #set($Entity="TreeEntity<${ClassName}Bo>")
 #end

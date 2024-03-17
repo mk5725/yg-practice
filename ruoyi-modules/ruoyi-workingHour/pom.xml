@@ -1,17 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>com.ruoyi</groupId>
-        <artifactId>yg-practice-cloud</artifactId>
+        <artifactId>ruoyi-modules</artifactId>
         <version>1.8.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ruoyi-auth</artifactId>
+    <artifactId>ruoyi-workingHour</artifactId>
 
     <description>
-        ruoyi-auth 认证授权中心
+        ruoyi-workingHour系统模块
     </description>
 
     <dependencies>
@@ -33,16 +34,15 @@
             <artifactId>ruoyi-common-sentinel</artifactId>
         </dependency>
 
-        <!-- RuoYi Common Security-->
-        <dependency>
-            <groupId>com.ruoyi</groupId>
-            <artifactId>ruoyi-common-security</artifactId>
-        </dependency>
-
         <!-- RuoYi Common Log -->
         <dependency>
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-common-log</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-common-dict</artifactId>
         </dependency>
 
         <dependency>
@@ -57,6 +57,11 @@
 
         <dependency>
             <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-common-mybatis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-common-dubbo</artifactId>
         </dependency>
 
@@ -65,29 +70,21 @@
             <artifactId>ruoyi-common-seata</artifactId>
         </dependency>
 
-        <!-- 自定义负载均衡(多团队开发使用) -->
-<!--        <dependency>-->
-<!--            <groupId>com.ruoyi</groupId>-->
-<!--            <artifactId>ruoyi-common-loadbalancer</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-common-security</artifactId>
+        </dependency>
 
-        <!-- ELK 日志收集 -->
-<!--        <dependency>-->
-<!--            <groupId>com.ruoyi</groupId>-->
-<!--            <artifactId>ruoyi-common-logstash</artifactId>-->
-<!--        </dependency>-->
+        <!-- RuoYi Api System -->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-api-system</artifactId>
+        </dependency>
 
-        <!-- skywalking 日志收集 -->
-<!--        <dependency>-->
-<!--            <groupId>com.ruoyi</groupId>-->
-<!--            <artifactId>ruoyi-common-skylog</artifactId>-->
-<!--        </dependency>-->
-
-        <!-- prometheus 监控 -->
-<!--        <dependency>-->
-<!--            <groupId>com.ruoyi</groupId>-->
-<!--            <artifactId>ruoyi-common-prometheus</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-api-resource</artifactId>
+        </dependency>
 
     </dependencies>
 
