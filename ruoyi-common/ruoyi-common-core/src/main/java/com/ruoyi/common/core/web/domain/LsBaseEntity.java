@@ -71,5 +71,4 @@ public class LsBaseEntity implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @TableField(exist = false)
     private Map<String, Object> params = new HashMap<>();
-
 }
