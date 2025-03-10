@@ -62,6 +62,7 @@ public class SysLoginService {
         // 获取登录token
         LoginHelper.loginByDevice(userInfo, DeviceType.PC);
 
+        // 记录登录状态
         recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success"));
         return StpUtil.getTokenValue();
     }

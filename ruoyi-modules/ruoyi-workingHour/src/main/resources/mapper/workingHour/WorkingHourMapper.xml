@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.workingHour.mapper.WorkingHourMapper">
+
+    <!--查询工时信息-->
+    <select id="selectWorkHourPage" parameterType="com.ruoyi.workingHour.domain.bo.WorkingHourBo"
+            resultType="com.ruoyi.workingHour.domain.vo.UserHourDetailVo">
+        select wh.id, p.project_name, wh.work_hours, wh.description,wh.update_time, wh.create_time
+            from working_hour wh join project p on wh.project_id = p.id and p.del_flag = '0'
+        where wh.del_flag = '0'
+        <if test="bo.userId != null">
+            and wh.user_id = #{bo.userId}
+        </if>
+        <if test="bo.startTime != null and bo.endTime != null">
+            and wh.update_time &gt; #{bo.startTime}  and  wh.update_time &lt;= #{bo.endTime}
+        </if>
+        order by wh.update_time desc
+    </select>
+
+    <resultMap type="com.ruoyi.workingHour.domain.vo.ProjectCountVo" id="projectCountResult">
+        <result property="id" column="id"/>
+        <result property="projectNo" column="project_no"/>
+        <result property="projectName" column="project_name"/>
+        <result property="status" column="status"/>
+        <result property="countFillPeople" column="countFillPeople"/>
+        <result property="expectedHour" column="expected_hour"/>
+        <result property="countHour" column="countHour"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <!--统计项目工时信息-->
+    <select id="getProjectCountAll" parameterType="com.ruoyi.workingHour.domain.bo.ProjectBo" resultMap="projectCountResult">
+        select p.id, p.project_no, p.project_name, p.status, p.create_time,
+               count(distinct user_id) countFillPeople, ifnull(sum(work_hours), 0) countHour, p.expected_hour
+            from project p
+                left join working_hour wh on p.id = wh.project_id and wh.del_flag = '0'
+        where p.del_flag = '0'
+            <if test="bo.projectId != null">
+                and p.id = #{bo.projectId}
+            </if>
+            <if test="bo.startTime != null and bo.endTime != null">
+                and wh.update_time &gt; #{bo.startTime}  and  wh.update_time &lt;= #{bo.endTime}
+            </if>
+        group by p.id, p.project_name, p.status, p.expected_hour
+        order by countHour desc
+    </select>
+
+    <resultMap type="com.ruoyi.workingHour.domain.vo.ProjectFillDetailVo" id="projectFillDetailResult">
+        <result property="id" column="id"/>
+        <result property="projectName" column="project_name"/>
+        <result property="fillUserId" column="user_id"/>
+        <result property="workHours" column="work_hours"/>
+        <result property="fillDate" column="update_time"/>
+    </resultMap>
+
+    <select id="getProjectFillDetail" parameterType="java.lang.Long" resultMap="projectFillDetailResult">
+        select p.id, p.project_name, wh.work_hours, wh.user_id, wh.update_time
+        from project p join working_hour wh
+        on p.id = wh.project_id
+        where wh.del_flag = '0'
+        <if test="projectId != null and projectId != ''">
+            and p.id = #{projectId}
+        </if>
+    </select>
+
+    <resultMap type="com.ruoyi.workingHour.domain.vo.UserHourDetailVo" id="hourDetailResult">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="projectName" column="project_name"/>
+        <result property="workHours" column="work_hours"/>
+        <result property="description" column="description"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="getHourDetail" parameterType="java.lang.Long" resultMap="hourDetailResult">
+        select wh.id, wh.user_id, wh.project_id, p.project_name, wh.work_hours, wh.description, wh.create_time, wh.update_time
+        from working_hour wh  join  project p  on p.id = wh.project_id
+        where wh.del_flag = '0'
+        <if test="userId != null and userId != ''">
+            and wh.user_id = #{userId}
+        </if>
+    </select>
+
+    <resultMap type="com.ruoyi.workingHour.domain.vo.UserHourCountVo" id="userHourCountResult">
+        <result property="userId" column="user_id"/>
+        <result property="countHour" column="countHour"/>
+    </resultMap>
+
+    <!--统计员工的工时信息-->
+    <select id="getUserHourCount" parameterType="com.ruoyi.workingHour.domain.bo.WorkingHourBo" resultMap="userHourCountResult" >
+        select user_id, sum(wh.work_hours) countHour from working_hour wh
+        where wh.del_flag = '0'
+            <if test="bo.projectId != null">
+                and wh.project_id = #{bo.projectId}
+            </if>
+            <if test="bo.startTime != null and bo.endTime != null">
+                and wh.update_time &gt; #{bo.startTime}  and  wh.update_time &lt;= #{bo.endTime}
+            </if>
+        group by wh.user_id
+        order by countHour desc
+    </select>
+
+    <resultMap type="com.ruoyi.workingHour.domain.WorkingHour" id="WorkingHourResult">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="workHours" column="work_hours"/>
+        <result property="description" column="description"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+
+</mapper>

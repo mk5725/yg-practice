@@ -3,8 +3,12 @@ package com.ruoyi.system.api;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.exception.user.UserException;
 import com.ruoyi.system.api.domain.SysUser;
+import com.ruoyi.system.api.domain.vo.SysUserVo;
 import com.ruoyi.system.api.model.LoginUser;
 import com.ruoyi.system.api.model.XcxLoginUser;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * 用户服务
@@ -60,4 +64,31 @@ public interface RemoteUserService {
      * @return 结果
      */
     String selectUserNameById(Long userId);
+
+
+    /**
+     * 查询所有用户信息
+     * @return 用户信息
+     */
+    List<SysUserVo> selectUserVoAll();
+
+
+    /**
+     * 查询用户
+     * @return 用户信息
+     */
+    List<SysUserVo> getUserVoExcludeIds(Collection<Long> ids);
+
+    /**
+     * 根据条件查询用户
+     * @return 用户信息
+     */
+    List<SysUserVo> getUserVoList(SysUserVo sysUserVo);
+
+    /**
+     * 根据用户集合查询用户信息
+     * @param ids 用户集合
+     * @return 用户信息
+     */
+    List<SysUserVo> selectUserVoByIds(Collection<Long> ids);
 }

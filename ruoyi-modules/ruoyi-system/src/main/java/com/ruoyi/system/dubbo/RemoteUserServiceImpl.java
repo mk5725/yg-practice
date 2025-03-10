@@ -1,13 +1,20 @@
 package com.ruoyi.system.dubbo;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.core.enums.UserStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.exception.user.UserException;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.system.api.RemoteUserService;
+import com.ruoyi.system.api.domain.SysDept;
+import com.ruoyi.system.api.domain.SysRole;
 import com.ruoyi.system.api.domain.SysUser;
+import com.ruoyi.system.api.domain.vo.SysUserVo;
 import com.ruoyi.system.api.model.LoginUser;
 import com.ruoyi.system.api.model.RoleDTO;
 import com.ruoyi.system.api.model.XcxLoginUser;
@@ -19,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * 用户服务
@@ -121,6 +128,49 @@ public class RemoteUserServiceImpl implements RemoteUserService {
         return userService.selectUserNameById(userId);
     }
 
+    @Override
+    public List<SysUserVo> selectUserVoAll() {
+        return userMapper.selectVoList(null, SysUserVo.class);
+    }
+
+    @Override
+    public List<SysUserVo> getUserVoExcludeIds(Collection<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return this.selectUserVoAll();
+        }
+        return userMapper.selectVoList(
+            Wrappers.lambdaQuery(SysUser.class)
+                .notIn(SysUser::getUserId, ids),
+            SysUserVo.class
+        );
+    }
+
+    /**
+     * 根据条件查询用户
+     * @return 用户信息
+     */
+    @Override
+    public List<SysUserVo> getUserVoList(SysUserVo sysUserVo){
+        if (ObjUtil.isNull(sysUserVo)){
+            return this.selectUserVoAll();
+        }
+        SysUser sysUser = new SysUser();
+        BeanUtil.copyProperties(sysUserVo, sysUser);
+        return userMapper.selectVoList(buildQueryWrapper(sysUser), SysUserVo.class);
+    }
+    /**
+     * 根据Ids查询用户信息
+     * @param ids 用户ids
+     * @return
+     */
+    @Override
+    public List<SysUserVo> selectUserVoByIds(Collection<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return userMapper.selectVoBatchIds(ids, SysUserVo.class);
+    }
+
     /**
      * 构建登录用户
      */
@@ -138,5 +188,21 @@ public class RemoteUserServiceImpl implements RemoteUserService {
         loginUser.setRoles(roles);
         return loginUser;
     }
+
+    /**
+     * 构造查询wrapper
+     *
+     */
+    private LambdaQueryWrapper<SysUser> buildQueryWrapper(SysUser e) {
+        String userName = StrUtil.isBlank(e.getUserName()) ? null : e.getUserName().trim();
+        String phonenumber = StrUtil.isBlank(e.getPhonenumber()) ? null : e.getPhonenumber().trim();
+        LambdaQueryWrapper<SysUser> lqw = Wrappers.lambdaQuery();
+        lqw.like(StringUtils.isNotBlank(userName), SysUser::getUserName, userName)
+        .like(StringUtils.isNotBlank(phonenumber), SysUser::getPhonenumber, phonenumber);
+        // 其他条件 ...
+
+        return lqw;
+    }
+
 
 }

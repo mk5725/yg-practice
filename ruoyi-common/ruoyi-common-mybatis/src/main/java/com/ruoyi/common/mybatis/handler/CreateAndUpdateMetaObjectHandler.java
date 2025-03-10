@@ -8,12 +8,14 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import com.ruoyi.common.core.web.domain.LsBaseEntity;
+import com.ruoyi.common.core.web.domain.WhBaseEntity;
 import com.ruoyi.common.satoken.utils.LoginHelper;
 import com.ruoyi.system.api.model.LoginUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * MP注入处理器
@@ -57,6 +59,23 @@ public class CreateAndUpdateMetaObjectHandler implements MetaObjectHandler {
                 baseEntity.setUpdateUserId(userId);
                 baseEntity.setUpdateUserName(username);
             }
+            if (ObjectUtil.isNotNull(metaObject) && metaObject.getOriginalObject() instanceof WhBaseEntity) {
+                WhBaseEntity whBaseEntity = (WhBaseEntity) metaObject.getOriginalObject();
+                Date current = ObjectUtil.isNotNull(whBaseEntity.getCreateTime())
+                    ? whBaseEntity.getCreateTime() : new Date();
+                whBaseEntity.setCreateTime(current);
+                whBaseEntity.setUpdateTime(current);
+                String username = StringUtils.isNotBlank(whBaseEntity.getCreateUserName())
+                    ? whBaseEntity.getCreateUserName() : getLoginUsername();
+                Long userId = ObjectUtil.isNotNull(whBaseEntity.getCreateUserId())
+                    ? whBaseEntity.getCreateUserId() : Long.parseLong(Objects.requireNonNull(getLoginUserId()));
+                // 当前已登录 且 创建人为空 则填充
+                whBaseEntity.setCreateUserId(userId);
+                whBaseEntity.setCreateUserName(username);
+                // 当前已登录 且 更新人为空 则填充
+                whBaseEntity.setUpdateUserId(userId);
+                whBaseEntity.setUpdateUserName(username);
+            }
         } catch (Exception e) {
             throw new ServiceException("自动注入异常 => " + e.getMessage(), HttpStatus.HTTP_UNAUTHORIZED);
         }
@@ -74,6 +93,22 @@ public class CreateAndUpdateMetaObjectHandler implements MetaObjectHandler {
                 // 当前已登录 更新人填充(不管为不为空)
                 if (StringUtils.isNotBlank(username)) {
                     baseEntity.setUpdateBy(username);
+                }
+            }
+            if (ObjectUtil.isNotNull(metaObject) && metaObject.getOriginalObject() instanceof WhBaseEntity) {
+                WhBaseEntity whBaseEntity = (WhBaseEntity) metaObject.getOriginalObject();
+                Date current = new Date();
+                // 更新时间填充(不管为不为空)
+                whBaseEntity.setUpdateTime(current);
+                String username = getLoginUsername();
+                // 当前已登录 更新人填充(不管为不为空)
+                if (StringUtils.isNotBlank(username)) {
+                    whBaseEntity.setUpdateUserName(username);
+                }
+                long userID = Long.parseLong(Objects.requireNonNull(getLoginUserId()));
+                // 当前已登录 更新人ID填充(不管为不为空)
+                if (ObjectUtil.isNotNull(userID)) {
+                    whBaseEntity.setUpdateUserId(userID);
                 }
             }
         } catch (Exception e) {
