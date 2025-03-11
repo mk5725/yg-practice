@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -18,6 +19,7 @@ import java.util.Map;
  */
 
 @Data
+//@Accessors(chain = true)
 public class LsBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -33,13 +35,7 @@ public class LsBaseEntity implements Serializable {
      * 创建者
      */
     @TableField(fill = FieldFill.INSERT)
-    private String createUserId;
-
-    /**
-     * 创建人名称
-     */
-    @TableField(fill = FieldFill.INSERT)
-    private String createUserName;
+    private Long createUserId;
 
     /**
      * 创建时间
@@ -51,13 +47,7 @@ public class LsBaseEntity implements Serializable {
      * 更新者
      */
     @TableField(fill = FieldFill.UPDATE)
-    private String updateUserId;
-
-    /**
-     * 更新人名称
-     */
-    @TableField(fill = FieldFill.UPDATE)
-    private String updateUserName;
+    private Long updateUserId;
 
     /**
      * 更新时间

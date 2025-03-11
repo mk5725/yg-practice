@@ -48,16 +48,10 @@ public class CreateAndUpdateMetaObjectHandler implements MetaObjectHandler {
                     ? baseEntity.getCreateTime() : new Date();
                 baseEntity.setCreateTime(current);
                 baseEntity.setUpdateTime(current);
-                String username = StringUtils.isNotBlank(baseEntity.getCreateUserName())
-                    ? baseEntity.getCreateUserName() : getLoginUsername();
-                String userId = StringUtils.isNotBlank(baseEntity.getCreateUserId())
-                    ? baseEntity.getCreateUserId() : getLoginUserId();
-                // 当前已登录 且 创建人为空 则填充
+                Long userId = ObjectUtil.isNotNull(baseEntity.getCreateUserId())
+                    ? baseEntity.getCreateUserId() : getLoginUserLongId();
                 baseEntity.setCreateUserId(userId);
-                baseEntity.setCreateUserName(username);
-                // 当前已登录 且 更新人为空 则填充
                 baseEntity.setUpdateUserId(userId);
-                baseEntity.setUpdateUserName(username);
             }
             if (ObjectUtil.isNotNull(metaObject) && metaObject.getOriginalObject() instanceof WhBaseEntity) {
                 WhBaseEntity whBaseEntity = (WhBaseEntity) metaObject.getOriginalObject();
@@ -94,6 +88,15 @@ public class CreateAndUpdateMetaObjectHandler implements MetaObjectHandler {
                 if (StringUtils.isNotBlank(username)) {
                     baseEntity.setUpdateBy(username);
                 }
+            }
+            if (ObjectUtil.isNotNull(metaObject) && metaObject.getOriginalObject() instanceof LsBaseEntity) {
+                LsBaseEntity baseEntity = (LsBaseEntity) metaObject.getOriginalObject();
+                Date current = ObjectUtil.isNotNull(baseEntity.getCreateTime())
+                    ? baseEntity.getCreateTime() : new Date();
+                baseEntity.setUpdateTime(current);
+                Long userId = ObjectUtil.isNotNull(baseEntity.getCreateUserId())
+                    ? baseEntity.getCreateUserId() : getLoginUserLongId();
+                baseEntity.setUpdateUserId(userId);
             }
             if (ObjectUtil.isNotNull(metaObject) && metaObject.getOriginalObject() instanceof WhBaseEntity) {
                 WhBaseEntity whBaseEntity = (WhBaseEntity) metaObject.getOriginalObject();
@@ -147,6 +150,25 @@ public class CreateAndUpdateMetaObjectHandler implements MetaObjectHandler {
             return null;
         }
         return ObjectUtil.isNotNull(loginUser) ? String.valueOf(loginUser.getUserId()) : null;
+    }
+
+    /**
+     * 获取登录用户id
+     */
+    private Long getLoginUserLongId() {
+        LoginUser loginUser;
+        try {
+            /*if (UserType.SYS_SUPPLIER == LoginHelper.getUserType()) {
+                //供应商门户端-自动注入新建人和更新人
+                loginUser = LoginHelper.getLoginSupplier();
+            } else {*/
+            loginUser = LoginHelper.getLoginUser();
+            //}
+        } catch (Exception e) {
+            log.warn("自动注入警告 => 用户未登录");
+            return null;
+        }
+        return ObjectUtil.isNotNull(loginUser) ? loginUser.getUserId() : null;
     }
 
 }

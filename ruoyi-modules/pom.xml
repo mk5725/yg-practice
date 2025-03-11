@@ -13,6 +13,7 @@
         <module>ruoyi-gen</module>
         <module>ruoyi-job</module>
         <module>ruoyi-resource</module>
+        <module>ruoyi-exam</module>
     </modules>
 
     <artifactId>ruoyi-modules</artifactId>

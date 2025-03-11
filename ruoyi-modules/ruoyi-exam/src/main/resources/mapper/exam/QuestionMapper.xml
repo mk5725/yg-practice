@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.exam.mapper.QuestionMapper">
+
+    <resultMap type="com.ruoyi.exam.domain.Question" id="QuestionResult">
+        <result property="id" column="id"/>
+        <result property="questionTypeId" column="question_type_id"/>
+        <result property="questionTypeCode" column="question_type_code"/>
+        <result property="questionText" column="question_text"/>
+        <result property="options" column="options"/>
+        <result property="answer" column="answer"/>
+        <result property="analysis" column="analysis"/>
+        <result property="score" column="score"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createUserId" column="create_user_id"/>
+        <result property="updateUserId" column="update_user_id"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+
+</mapper>
