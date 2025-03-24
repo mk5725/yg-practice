@@ -13,7 +13,6 @@ public class ThrowUtils {
      */
     public static void throwIf(boolean condition, RuntimeException runtimeException) {
         if (condition) {
-
             throw runtimeException;
         }
     }

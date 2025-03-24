@@ -2,6 +2,8 @@ package com.ruoyi.exam.domain.enums;
 
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * 题目类型枚举类
  * @author z
@@ -17,14 +19,14 @@ public enum QuestionTypeEnum {
     PROGRAMMING(6, "编程题"),
     DISCUSSION(7, "论述题");
 
-    private final int code;
+    private final Integer code;
     private final String description;
     QuestionTypeEnum(int code, String description) {
         this.code = code;
         this.description = description;
     }
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 
@@ -35,9 +37,9 @@ public enum QuestionTypeEnum {
     /**
      * 根据 code 获取枚举对象
      */
-    public static QuestionTypeEnum fromCode(int code) {
+    public static QuestionTypeEnum fromCode(Integer code) {
         for (QuestionTypeEnum type : QuestionTypeEnum.values()) {
-            if (type.getCode() == code) {
+            if (Objects.equals(type.getCode(), code)) {
                 return type;
             }
         }

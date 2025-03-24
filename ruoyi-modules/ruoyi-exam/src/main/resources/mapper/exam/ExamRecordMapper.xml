@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.exam.mapper.ExamRecordMapper">
+
+    <resultMap type="com.ruoyi.exam.domain.ExamRecord" id="ExamRecordResult">
+        <result property="id" column="id"/>
+        <result property="sendId" column="send_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="recordStatus" column="status"/>
+        <result property="score" column="score"/>
+        <result property="submitTime" column="submit_time"/>
+        <result property="reviewerUserId" column="reviewer_user_id"/>
+        <result property="reviewerTime" column="reviewer_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createUserId" column="create_user_id"/>
+        <result property="updateUserId" column="update_user_id"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <!-- 查询考试记录 -->
+    <select id="selectRecordVoPage" resultType="com.ruoyi.exam.domain.vo.ExamRecordVo">
+        select r.id,
+        p.id paper_id,
+        s.id send_id,
+        p.paper_name,
+        p.pass_score,
+        p.total_score,
+        s.`status`,
+        s.start_time,
+        s.end_time,
+        r.user_id,
+        r.submit_time,
+        r.score,
+        r.record_status,
+        r.reviewer_user_id,
+        r.create_time,
+        r.create_user_id
+        from exam_record r
+        join exam_send s on r.send_id = s.id
+        join exam_paper p on s.paper_id = p.id
+        <where>
+            r.del_flag = '0'
+            <if test="bo.paperName != null and bo.paperName != ''">
+                and p.paper_name like CONCAT('%', #{bo.paperName}, '%')
+            </if>
+            <if test="bo.recordStatus != null">
+                and r.record_status = #{bo.recordStatus}
+            </if>
+            <if test="bo.sendId != null">
+                and r.send_id = #{bo.sendId}
+            </if>
+            <if test="bo.userId != null">
+                and r.user_id = #{bo.userId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询试卷信息 (用于考试 - 不包括答案) -->
+    <select id="selectExamPaperById" resultMap="ExamPaperResult"
+            parameterType="java.lang.Long">
+        SELECT
+        r.id record_id, <include refid="paper_columns"/>,
+        s.start_time, s.end_time, s.duration send_duration,
+        t.id title_id, t.order_num title_order, t.title_name,
+        <include refid="question_columns"/>
+        FROM exam_record r
+        LEFT JOIN exam_send s on r.send_id = s.id and s.del_flag = '0'
+        LEFT JOIN exam_paper p on s.paper_id = p.id
+        LEFT JOIN exam_paper_title t ON t.paper_id = p.id AND t.del_flag = '0'
+        LEFT JOIN exam_paper_question epq ON epq.title_id = t.id AND epq.del_flag = '0'
+        LEFT JOIN question q ON q.id = epq.question_id
+        <where>
+            r.del_flag = '0' and r.id = #{id}
+        </where>
+        ORDER BY t.order_num, epq.order_sum
+    </select>
+    <resultMap id="ExamPaperResult" type="com.ruoyi.exam.domain.vo.ExamPaperVo">
+        <id property="id" column="paper_id"/>
+        <id property="recordId" column="record_id"/>
+        <result property="paperId" column="paper_id"/>
+        <result property="paperName" column="paper_name"/>
+        <result property="paperType" column="paper_type"/>
+        <result property="sendDuration" column="send_duration"/>
+        <result property="totalScore" column="total_score"/>
+        <result property="passScore" column="pass_score"/>
+        <result property="createTime" column="create_time"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+
+        <!-- 关联查询 标题列表 -->
+        <collection property="paperTitleList" ofType="com.ruoyi.exam.domain.vo.ExamPaperTitleVo">
+            <id property="id" column="title_id"/>
+            <id property="orderNum" column="title_order"/>
+            <result property="titleName" column="title_name"/>
+
+            <!-- 关联查询 题目列表 -->
+            <collection property="questionList" ofType="com.ruoyi.exam.domain.vo.QuestionVo">
+                <id property="id" column="question_id"/>
+                <result property="questionTypeId" column="question_type_id"/>
+                <result property="questionOrder" column="question_order"/>
+                <result property="questionTypeCode" column="question_type_code"/>
+                <result property="questionText" column="question_text"/>
+                <result property="score" column="score"/>
+                <result property="answerCount" column="answer_count"/>
+                <result property="options" column="options"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+
+    <!-- 查询试卷信息 (试卷批改、完结详情) -->
+    <select id="selectExamReviewerById" resultMap="examReviewerResult"
+            parameterType="java.lang.Long">
+        -- 查询试卷答题信息 - 根据记录ID - 用于试卷批改
+        SELECT
+        r.id record_id, <include refid="paper_columns"/>,
+        s.start_time, s.end_time, s.duration send_duration,
+        t.id title_id, t.order_num title_order, t.title_name,
+        <include refid="question_columns"/>, q.answer, q.analysis,
+        <include refid="answer_detail_columns"/>
+        FROM exam_record r
+         JOIN exam_send s on r.send_id = s.id
+         JOIN exam_paper p on s.paper_id = p.id
+         JOIN exam_paper_title t ON t.paper_id = p.id AND t.del_flag = '0'
+         JOIN exam_paper_question epq ON epq.title_id = t.id AND epq.del_flag = '0'
+         JOIN question q ON q.id = epq.question_id
+         JOIN answer_detail d ON r.id = d.record_id and d.question_id = q.id AND d.del_flag = '0'
+        <where>
+            r.del_flag = '0' and r.id = #{id}
+        </where>
+        ORDER BY t.order_num, epq.order_sum
+    </select>
+    <resultMap id="examReviewerResult" type="com.ruoyi.exam.domain.vo.ExamPaperVo">
+        <id property="id" column="paper_id"/>
+        <id property="recordId" column="record_id"/>
+        <result property="paperId" column="paper_id"/>
+        <result property="paperName" column="paper_name"/>
+        <result property="paperType" column="paper_type"/>
+        <result property="sendDuration" column="send_duration"/>
+        <result property="totalScore" column="total_score"/>
+        <result property="passScore" column="pass_score"/>
+        <result property="createTime" column="create_time"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+
+        <!-- 关联查询 标题列表 -->
+        <collection property="paperTitleList" ofType="com.ruoyi.exam.domain.vo.ExamPaperTitleVo">
+            <id property="id" column="title_id"/>
+            <id property="orderNum" column="title_order"/>
+            <result property="titleName" column="title_name"/>
+
+            <!-- 关联查询 题目列表 -->
+            <collection property="questionList" ofType="com.ruoyi.exam.domain.vo.QuestionVo">
+                <id property="id" column="question_id"/>
+                <result property="questionTypeId" column="question_type_id"/>
+                <result property="questionOrder" column="question_order"/>
+                <result property="questionTypeCode" column="question_type_code"/>
+                <result property="questionText" column="question_text"/>
+                <result property="score" column="score"/>
+                <result property="answer" column="answer"/>
+                <result property="analysis" column="analysis"/>
+                <result property="answerCount" column="answer_count"/>
+                <result property="options" column="options"/>
+
+                <!-- 关联查询 多个答题信息 -->
+                <collection property="answerDetail" ofType="com.ruoyi.exam.domain.vo.AnswerDetailVo">
+                    <id property="id" column="detail_id"/>
+                    <id property="recordId" column="record_id"/>
+                    <result property="userAnswer" column="user_answer"/>
+                    <result property="okFlag" column="ok_flag"/>
+                    <result property="score" column="get_question_score"/>
+                </collection>
+            </collection>
+        </collection>
+    </resultMap>
+
+
+    <!-- 公共 SQL 片段  -->
+    <sql id="paper_columns">
+        p.id paper_id, p.paper_name, p.paper_type,
+    p.total_score, p.pass_score, p.create_time
+    </sql>
+    <sql id="question_columns">
+        q.id question_id, epq.order_sum question_order,
+    q.question_type_id, q.question_type_code,
+    q.question_text, q.score, q.`options`, q.answer_count
+    </sql>
+    <sql id="answer_detail_columns">
+        d.id detail_id, d.user_answer, d.ok_flag, d.score get_question_score
+    </sql>
+</mapper>

@@ -4,9 +4,13 @@ import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.ruoyi.common.excel.annotation.ExcelDictFormat;
 import com.ruoyi.common.excel.convert.ExcelDictConvert;
+import com.ruoyi.exam.domain.dto.QuestionDto;
 import lombok.Data;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.io.Serializable;
+import java.util.List;
 
 
 /**
@@ -46,13 +50,19 @@ public class ExamPaperTitleVo implements Serializable {
      */
     @ExcelProperty(value = "标题排序", converter = ExcelDictConvert.class)
     @ExcelDictFormat(readConverterExp = "显=示顺序")
-    private Long orderNum;
+    private Integer orderNum;
 
     /**
      * 创建时间
      */
     @ExcelProperty(value = "创建时间")
     private Date createTime;
+
+    /**
+     * 题目数据列表
+     *
+     */
+    private List<QuestionVo> questionList = new ArrayList<>();
 
 
 }

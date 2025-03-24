@@ -7,6 +7,8 @@ import com.ruoyi.common.mybatis.core.page.TableDataInfo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.ruoyi.exam.exception.BusinessException;
+import com.ruoyi.exam.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.ruoyi.exam.domain.bo.ExamPaperQuestionBo;
@@ -63,7 +65,6 @@ public class ExamPaperQuestionServiceImpl implements IExamPaperQuestionService {
         LambdaQueryWrapper<ExamPaperQuestion> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getPaperId() != null, ExamPaperQuestion::getPaperId, bo.getPaperId());
         lqw.eq(bo.getQuestionId() != null, ExamPaperQuestion::getQuestionId, bo.getQuestionId());
-        lqw.eq(bo.getScore() != null, ExamPaperQuestion::getScore, bo.getScore());
         lqw.eq(bo.getCreateTime() != null, ExamPaperQuestion::getCreateTime, bo.getCreateTime());
         return lqw;
     }
@@ -108,5 +109,19 @@ public class ExamPaperQuestionServiceImpl implements IExamPaperQuestionService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public List<ExamPaperQuestionVo> countPaperWithQuestion() {
+        return baseMapper.countPaperWithQuestion(null);
+    }
+
+    @Override
+    public Integer countQuestionByPaperId(Long paperId) {
+        List<ExamPaperQuestionVo> list = baseMapper.countPaperWithQuestion(paperId);
+        if (list.isEmpty()){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "试卷不存在");
+        }
+        return list.stream().findFirst().get().getTotalQuestion();
     }
 }

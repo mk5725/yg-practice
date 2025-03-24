@@ -34,3 +34,9 @@ spring:
 exam:
   date:
     format: yyyy-MM-dd
+
+## JSON 映射配置
+mybatis-plus:
+  configuration:
+    default-enum-type-handler: com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler
+

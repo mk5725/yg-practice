@@ -1,6 +1,5 @@
 package com.ruoyi.exam.service;
 
-import com.ruoyi.exam.domain.ExamPaper;
 import com.ruoyi.exam.domain.vo.ExamPaperVo;
 import com.ruoyi.exam.domain.bo.ExamPaperBo;
 import com.ruoyi.common.mybatis.core.page.PageQuery;
@@ -35,7 +34,7 @@ public interface IExamPaperService {
     /**
      * 修改试卷
      */
-    Boolean insertByBo(ExamPaperBo bo);
+    Boolean insertOrUpdate(ExamPaperBo bo);
 
     /**
      * 修改试卷
@@ -46,4 +45,10 @@ public interface IExamPaperService {
      * 校验并批量删除试卷信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    /**
+     * 判断试卷是否存在
+     */
+    boolean existsById(Long examId);
+    boolean existsWithLock(Long examId); // 加锁
 }

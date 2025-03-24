@@ -40,13 +40,21 @@ public class Question extends LsBaseEntity {
      */
     private String questionText;
     /**
-     * 选项（JSON格式）
+     * 选项
      */
     private String options;
+
     /**
      * 答案（填空/简答存文本，选择题存索引）
      */
     private String answer;
+
+
+    /**
+     * 填空数量
+     */
+    private Integer answerCount;
+
     /**
      * 解析
      */

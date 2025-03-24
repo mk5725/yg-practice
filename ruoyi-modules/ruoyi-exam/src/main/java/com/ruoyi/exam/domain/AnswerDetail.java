@@ -1,6 +1,7 @@
 package com.ruoyi.exam.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ import com.ruoyi.common.core.web.domain.LsBaseEntity;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("answer_detail")
+@Builder
 public class AnswerDetail extends LsBaseEntity {
 
     private static final long serialVersionUID=1L;
@@ -31,27 +33,31 @@ public class AnswerDetail extends LsBaseEntity {
     @TableId(value = "id")
     private Long id;
     /**
-     * 试卷ID（关联 exam_paper.id）
+     * 试卷ID
      */
     private Long paperId;
     /**
-     * 答题人ID（关联 user.id）
+     * 答题人ID
      */
     private Long userId;
     /**
-     * 考试发放记录ID（关联 exam_send.id）
+     * 考试发放记录ID
      */
     private Long examSendId;
     /**
-     * 题目ID（关联 question.id）
+     * 题目ID
      */
     private Long questionId;
+    /**
+     * 考试记录ID
+     */
+    private Long recordId;
     /**
      * 考生答题内容
      */
     private String userAnswer;
     /**
-     * 是否正确（0-错误 1-正确）（适用于自动判分的题型）
+     * 是否正确（0-错误 1-正确,2-待批改）
      */
     private Integer okFlag;
     /**
@@ -64,15 +70,7 @@ public class AnswerDetail extends LsBaseEntity {
     @Version
     private Long userAnswerVersion;
     /**
-     * 批改人ID（系统自动判分为null）
-     */
-    private Long reviewerUserId;
-    /**
-     * 批改时间
-     */
-    private Date reviewerTime;
-    /**
-     * 提交时间（为空则表示未提交）
+     * 提交时间
      */
     private Date submitTime;
     /**

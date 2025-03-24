@@ -1,12 +1,19 @@
 package com.ruoyi.exam.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.ruoyi.common.core.utils.StringUtils;
+import cn.hutool.core.util.ObjectUtil;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.mybatis.core.page.PageQuery;
 import com.ruoyi.common.mybatis.core.page.TableDataInfo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.ruoyi.exam.domain.ExamRecord;
+import com.ruoyi.exam.domain.vo.ExamRecordVo;
+import com.ruoyi.exam.exception.BusinessException;
+import com.ruoyi.exam.exception.ErrorCode;
+import com.ruoyi.exam.mapper.ExamRecordMapper;
+import com.ruoyi.exam.service.IExamPaperService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.ruoyi.exam.domain.bo.ExamSendBo;
@@ -14,10 +21,13 @@ import com.ruoyi.exam.domain.vo.ExamSendVo;
 import com.ruoyi.exam.domain.ExamSend;
 import com.ruoyi.exam.mapper.ExamSendMapper;
 import com.ruoyi.exam.service.IExamSendService;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.ruoyi.exam.contants.ExamStatusConstants.STATUS_PENDING;
+
 
 /**
  * 试卷发放记录Service业务层处理
@@ -31,8 +41,12 @@ public class ExamSendServiceImpl implements IExamSendService {
 
     private final ExamSendMapper baseMapper;
 
+    private final IExamPaperService examPaperService;
+
+    private final ExamRecordMapper recordMapper;
+
     /**
-     * 查询试卷发放记录
+     * 查询试卷发放记录详情
      */
     @Override
     public ExamSendVo queryById(Long id){
@@ -44,8 +58,9 @@ public class ExamSendServiceImpl implements IExamSendService {
      */
     @Override
     public TableDataInfo<ExamSendVo> queryPageList(ExamSendBo bo, PageQuery pageQuery) {
-        LambdaQueryWrapper<ExamSend> lqw = buildQueryWrapper(bo);
-        Page<ExamSendVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+
+        Page<ExamSendVo> result = baseMapper.selectExamSendPage(pageQuery.build(), bo);
+
         return TableDataInfo.build(result);
     }
 
@@ -62,12 +77,9 @@ public class ExamSendServiceImpl implements IExamSendService {
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<ExamSend> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getPaperId() != null, ExamSend::getPaperId, bo.getPaperId());
-        lqw.eq(bo.getUserId() != null, ExamSend::getUserId, bo.getUserId());
         lqw.eq(bo.getStartTime() != null, ExamSend::getStartTime, bo.getStartTime());
         lqw.eq(bo.getEndTime() != null, ExamSend::getEndTime, bo.getEndTime());
         lqw.eq(bo.getStatus() != null, ExamSend::getStatus, bo.getStatus());
-        lqw.eq(bo.getScore() != null, ExamSend::getScore, bo.getScore());
-        lqw.eq(bo.getSubmitTime() != null, ExamSend::getSubmitTime, bo.getSubmitTime());
         return lqw;
     }
 
@@ -75,14 +87,29 @@ public class ExamSendServiceImpl implements IExamSendService {
      * 新增试卷发放记录
      */
     @Override
+    @Transactional
     public Boolean insertByBo(ExamSendBo bo) {
-        ExamSend add = BeanUtil.toBean(bo, ExamSend.class);
-        validEntityBeforeSave(add);
-        boolean flag = baseMapper.insert(add) > 0;
-        if (flag) {
-            bo.setId(add.getId());
+        // 判断试卷是否存在
+        if (!examPaperService.existsWithLock(bo.getPaperId())){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "试卷不存在");
         }
-        return flag;
+
+        ExamSend add = BeanUtil.toBean(bo, ExamSend.class);
+        baseMapper.insert(add);
+
+        // 构造考试记录
+        Set<Long> userIdSet = new HashSet<>(bo.getUserIds());
+        List<ExamRecord> recordList = userIdSet.stream().map(id ->
+            ExamRecord.builder()
+                .sendId(add.getId())
+                .userId(id)
+                .paperId(add.getPaperId())
+                .build()).collect(Collectors.toList());
+
+        // 批量添加
+        return recordMapper.insertBatch(recordList);
+
+        // TODO 考生考试时间冲突、考生不存在、考试区间与考试时长
     }
 
     /**
@@ -91,24 +118,28 @@ public class ExamSendServiceImpl implements IExamSendService {
     @Override
     public Boolean updateByBo(ExamSendBo bo) {
         ExamSend update = BeanUtil.toBean(bo, ExamSend.class);
-        validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;
-    }
-
-    /**
-     * 保存前的数据校验
-     */
-    private void validEntityBeforeSave(ExamSend entity){
-        //TODO 做一些数据校验,如唯一约束
     }
 
     /**
      * 批量删除试卷发放记录
      */
     @Override
+    @Transactional
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
-        if(isValid){
-            //TODO 做一些业务上的校验,判断是否需要校验
+        // 查询考试记录
+        List<ExamRecordVo> recordVoList = recordMapper.selectVoList(Wrappers.<ExamRecord>lambdaQuery()
+            .in(ExamRecord::getSendId, ids));
+        if (ObjectUtil.isNotEmpty(recordVoList)){
+            // 判断考试状态
+            boolean hasExam = recordVoList.stream().anyMatch(record -> record.getRecordStatus() > STATUS_PENDING);
+            if (hasExam){
+                throw new BusinessException(ErrorCode.OPERATION_ERROR, "考试已开始，删除失败!");
+            }
+
+            // 删除发放的考试记录
+            recordMapper.deleteBatchIds(recordVoList.stream()
+                .map(ExamRecordVo::getId).collect(Collectors.toSet()));
         }
         return baseMapper.deleteBatchIds(ids) > 0;
     }

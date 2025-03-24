@@ -9,7 +9,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="paperId" column="paper_id"/>
         <result property="questionId" column="question_id"/>
         <result property="titleId" column="title_id"/>
-        <result property="score" column="score"/>
         <result property="orderSum" column="order_sum"/>
         <result property="paperVersion" column="paper_version"/>
         <result property="createTime" column="create_time"/>
@@ -18,6 +17,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateUserId" column="update_user_id"/>
         <result property="delFlag" column="del_flag"/>
     </resultMap>
+
+    <!-- 统计试卷题目数量 -->
+    <select id="countPaperWithQuestion" resultType="com.ruoyi.exam.domain.vo.ExamPaperQuestionVo">
+        select paper_id, count(id) totalQuestion
+        from exam_paper_question
+        <where>
+        <if test="paperId != null">
+            and paper_id = #{paperId}
+        </if>
+        </where>
+        GROUP BY paper_id
+    </select>
 
 
 </mapper>

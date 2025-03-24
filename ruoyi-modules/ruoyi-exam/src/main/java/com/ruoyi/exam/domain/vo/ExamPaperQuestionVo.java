@@ -30,8 +30,13 @@ public class ExamPaperQuestionVo implements Serializable {
      * 试卷ID（关联 exam_paper.id）
      */
     @ExcelProperty(value = "试卷ID", converter = ExcelDictConvert.class)
-    @ExcelDictFormat(readConverterExp = "关=联,e=xam_paper.id")
+    @ExcelDictFormat(readConverterExp = "e=xam_paper.id")
     private Long paperId;
+
+    /**
+     * 试题数量
+     */
+    private Integer totalQuestion;
 
     /**
      * 题目ID（关联 question.id）
@@ -44,14 +49,8 @@ public class ExamPaperQuestionVo implements Serializable {
      * 标题ID（关联 exam_paper_title.id）
      */
     @ExcelProperty(value = "标题ID", converter = ExcelDictConvert.class)
-    @ExcelDictFormat(readConverterExp = "关=联,e=xam_paper_title.id")
+    @ExcelDictFormat(readConverterExp = "paper_title.id")
     private Long titleId;
-
-    /**
-     * 该题在试卷中的分值
-     */
-    @ExcelProperty(value = "该题在试卷中的分值")
-    private BigDecimal score;
 
     /**
      * 题目排序（升序）

@@ -5,6 +5,7 @@ import com.ruoyi.exam.domain.vo.ExamPaperQuestionVo;
 import com.ruoyi.exam.domain.bo.ExamPaperQuestionBo;
 import com.ruoyi.common.mybatis.core.page.PageQuery;
 import com.ruoyi.common.mybatis.core.page.TableDataInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
 import java.util.List;
@@ -46,4 +47,14 @@ public interface IExamPaperQuestionService {
      * 校验并批量删除试卷题目关联信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    /**
+     * 查询试卷题目数量
+     */
+    List<ExamPaperQuestionVo> countPaperWithQuestion();
+
+    /**
+     * 查询试卷题目数量
+     */
+    Integer countQuestionByPaperId(Long paperId);
 }

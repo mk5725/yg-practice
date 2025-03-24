@@ -31,28 +31,22 @@ public class ExamPaperQuestionBo extends LsBaseEntity {
     private Long id;
 
     /**
-     * 试卷ID（关联 exam_paper.id）
+     * 试卷ID
      */
-    @NotNull(message = "试卷ID（关联 exam_paper.id）不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "试卷ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long paperId;
 
     /**
-     * 题目ID（关联 question.id）
+     * 题目ID
      */
-    @NotNull(message = "题目ID（关联 question.id）不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "题目ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long questionId;
 
     /**
-     * 标题ID（关联 exam_paper_title.id）
+     * 标题ID
      */
-    @NotNull(message = "标题ID（关联 exam_paper_title.id）不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "标题ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long titleId;
-
-    /**
-     * 该题在试卷中的分值
-     */
-    @NotNull(message = "该题在试卷中的分值不能为空", groups = { AddGroup.class, EditGroup.class })
-    private BigDecimal score;
 
     /**
      * 题目排序（升序）

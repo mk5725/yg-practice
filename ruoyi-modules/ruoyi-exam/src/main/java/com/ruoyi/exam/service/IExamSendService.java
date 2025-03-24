@@ -1,6 +1,5 @@
 package com.ruoyi.exam.service;
 
-import com.ruoyi.exam.domain.ExamSend;
 import com.ruoyi.exam.domain.vo.ExamSendVo;
 import com.ruoyi.exam.domain.bo.ExamSendBo;
 import com.ruoyi.common.mybatis.core.page.PageQuery;
@@ -20,7 +19,7 @@ public interface IExamSendService {
     /**
      * 查询试卷发放记录
      */
-    ExamSendVo queryById(Long id);
+    ExamSendVo queryById(Long id );
 
     /**
      * 查询试卷发放记录列表

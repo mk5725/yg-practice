@@ -1,15 +1,19 @@
 package com.ruoyi.exam.domain.bo;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.ruoyi.common.core.validate.AddGroup;
 import com.ruoyi.common.core.validate.EditGroup;
+import com.ruoyi.common.core.web.domain.LsBaseEntity;
+import com.ruoyi.exam.domain.dto.ExamPaperData;
+import com.ruoyi.exam.domain.dto.QuestionFillBlank;
+import com.ruoyi.exam.domain.dto.QuestionOptions;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import javax.validation.constraints.*;
 
-import java.util.Date;
-
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import com.ruoyi.common.core.web.domain.LsBaseEntity;
+import java.util.List;
 
 /**
  * 题目业务对象
@@ -36,7 +40,7 @@ public class QuestionBo extends LsBaseEntity {
     /**
      * 题目类型编码（1-单选, 2-多选, 3-判断, 4-填空, 5-简答, 6-其他）
      */
-    @NotNull(message = "题目类型编码（1-单选, 2-多选, 3-判断, 4-填空, 5-简答, 6-其他）不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "题目类型编码不能为空", groups = { AddGroup.class, EditGroup.class })
     private Integer questionTypeCode;
 
     /**
@@ -46,16 +50,24 @@ public class QuestionBo extends LsBaseEntity {
     private String questionText;
 
     /**
-     * 选项（JSON格式）
+     * 选项 JSON 格式
      */
-    @NotBlank(message = "选项（JSON格式）不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String options;
+    private JsonNode options;
 
     /**
-     * 答案（填空/简答存文本，选择题存索引）
+     * 选项对象
      */
-    @NotBlank(message = "答案（填空/简答存文本，选择题存索引）不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String answer;
+    private List<QuestionOptions> optionList;
+
+    /**
+     * 答案文本（填空/简答存文本，选择题存索引）
+     */
+     private String answer;
+
+    /**
+     * 填空数量
+     */
+    private Integer answerCount;
 
     /**
      * 解析
@@ -67,6 +79,4 @@ public class QuestionBo extends LsBaseEntity {
      */
     @NotNull(message = "题目分值不能为空", groups = { AddGroup.class, EditGroup.class })
     private BigDecimal score;
-
-
 }

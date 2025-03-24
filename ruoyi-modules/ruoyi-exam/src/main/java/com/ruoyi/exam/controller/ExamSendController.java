@@ -10,8 +10,11 @@ import com.ruoyi.common.excel.utils.ExcelUtil;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.mybatis.core.page.PageQuery;
+import com.ruoyi.exam.exception.ErrorCode;
+import com.ruoyi.exam.exception.ThrowUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.ruoyi.exam.domain.vo.ExamSendVo;
@@ -27,10 +30,9 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * 试卷发放记录控制器
- * 前端访问路由地址为:/exam/send
  *
  * @author zkm
- * @date  2025-03
+ * @date 2025-03
  */
 @Validated
 @RequiredArgsConstructor
@@ -67,17 +69,19 @@ public class ExamSendController extends BaseController {
      */
     @SaCheckPermission("exam:send:query")
     @GetMapping("/{id}")
-    public R<ExamSendVo> getInfo(@NotNull(message = "主键不能为空") @PathVariable Long id) {
+    public R<ExamSendVo> getInfo(@NotNull(message = "主键不能为空") @PathVariable Long id, ExamSendBo bo) {
         return R.ok(iExamSendService.queryById(id));
     }
 
     /**
-     * 新增试卷发放记录
+     * 新增试卷发放
      */
     @SaCheckPermission("exam:send:add")
     @Log(title = "试卷发放记录", businessType = BusinessType.INSERT)
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody ExamSendBo bo) {
+        ThrowUtils.throwIf(bo.getEndTime().before(bo.getStartTime()),
+            ErrorCode.PARAMS_ERROR, "考试结束时间必须大于考试开始时间");
         return toAjax(iExamSendService.insertByBo(bo));
     }
 

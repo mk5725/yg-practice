@@ -26,12 +26,12 @@ public class QuestionType extends LsBaseEntity {
     /**
      * 题目类型ID
      */
-    @TableId(value = "id")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     /**
      * 类型编码（（1-单选, 2-多选, 3-判断, 4-填空, 5-简答 ...）
      */
-    private Long typeCode;
+    private Integer typeCode;
     /**
      * 类型名称（单选题、多选题、...）
      */

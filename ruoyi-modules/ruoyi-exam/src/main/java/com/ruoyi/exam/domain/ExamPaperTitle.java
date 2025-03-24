@@ -1,6 +1,7 @@
 package com.ruoyi.exam.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ import com.ruoyi.common.core.web.domain.LsBaseEntity;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("exam_paper_title")
+@Builder
 public class ExamPaperTitle extends LsBaseEntity {
 
     private static final long serialVersionUID=1L;
@@ -39,19 +41,12 @@ public class ExamPaperTitle extends LsBaseEntity {
     /**
      * 标题排序（显示顺序）
      */
-    private Long orderNum;
-    /**
-     * 创建人ID
-     */
-    private Long createUserId;
-    /**
-     * 更新人ID
-     */
-    private Long updateUserId;
+    private Integer orderNum;
     /**
      * 删除标识（0：未删除，2：已删除）
      */
     @TableLogic
     private String delFlag;
+
 
 }

@@ -10,12 +10,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <result property="userId" column="user_id"/>
     <result property="examSendId" column="exam_send_id"/>
     <result property="questionId" column="question_id"/>
+    <result property="recordId" column="record_id"/>
     <result property="userAnswer" column="user_answer"/>
     <result property="okFlag" column="ok_flag"/>
     <result property="score" column="score"/>
     <result property="userAnswerVersion" column="user_answer_version"/>
-    <result property="reviewerUserId" column="reviewer_user_id"/>
-    <result property="reviewerTime" column="reviewer_time"/>
     <result property="submitTime" column="submit_time"/>
     <result property="createTime" column="create_time"/>
     <result property="updateTime" column="update_time"/>
@@ -23,6 +22,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <result property="updateUserId" column="update_user_id"/>
     <result property="delFlag" column="del_flag"/>
     </resultMap>
+
+    <!-- 统计对题  -->
+    <select id="countCorrectAnswers" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM answer_detail WHERE record_id = #{id} AND ok_flag = 1;
+    </select>
 
 
 </mapper>

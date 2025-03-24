@@ -32,7 +32,7 @@ public class QuestionTypeVo implements Serializable {
      */
     @ExcelProperty(value = "类型编码", converter = ExcelDictConvert.class)
     @ExcelDictFormat(readConverterExp = "（=1-单选,,2=-多选,,3=-判断,,4=-填空,,5=-简答,.=..")
-    private Long typeCode;
+    private Integer typeCode;
 
     /**
      * 类型名称（单选题、多选题、...）

@@ -1,6 +1,7 @@
 package com.ruoyi.exam.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ import com.ruoyi.common.core.web.domain.LsBaseEntity;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("exam_paper_question")
+@Builder
 public class ExamPaperQuestion extends LsBaseEntity {
 
     private static final long serialVersionUID=1L;
@@ -30,25 +32,21 @@ public class ExamPaperQuestion extends LsBaseEntity {
     @TableId(value = "id")
     private Long id;
     /**
-     * 试卷ID（关联 exam_paper.id）
+     * 试卷ID
      */
     private Long paperId;
     /**
-     * 题目ID（关联 question.id）
+     * 题目ID
      */
     private Long questionId;
     /**
-     * 标题ID（关联 exam_paper_title.id）
+     * 标题ID
      */
     private Long titleId;
     /**
-     * 该题在试卷中的分值
-     */
-    private BigDecimal score;
-    /**
      * 题目排序（升序）
      */
-    private Long orderSum;
+    private Integer orderSum;
     /**
      * 试卷版本
      */

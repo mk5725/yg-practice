@@ -12,4 +12,9 @@ import com.ruoyi.exam.domain.vo.AnswerDetailVo;
  */
 public interface AnswerDetailMapper extends BaseMapperPlus<AnswerDetailMapper, AnswerDetail, AnswerDetailVo> {
 
+    /**
+     * 统计对题
+     */
+    int countCorrectAnswers(Long id);
+
 }

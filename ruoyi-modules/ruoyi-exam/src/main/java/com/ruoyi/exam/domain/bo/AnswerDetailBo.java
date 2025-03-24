@@ -29,27 +29,32 @@ public class AnswerDetailBo extends LsBaseEntity {
     private Long id;
 
     /**
-     * 试卷ID（关联 exam_paper.id）
+     * 试卷ID
      */
-    @NotNull(message = "试卷ID（关联 exam_paper.id）不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "试卷ID 不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long paperId;
 
     /**
-     * 答题人ID（关联 user.id）
+     * 答题人ID
      */
-    @NotNull(message = "答题人ID（关联 user.id）不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "答题人ID 不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long userId;
 
     /**
-     * 考试发放记录ID（关联 exam_send.id）
+     * 考试发放记录ID
      */
-    @NotNull(message = "考试发放记录ID（关联 exam_send.id）不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "考试发放记录I 不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long examSendId;
 
     /**
-     * 题目ID（关联 question.id）
+     * 考试记录ID
      */
-    @NotNull(message = "题目ID（关联 question.id）不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Long recordId;
+
+    /**
+     * 题目ID
+     */
+    @NotNull(message = "题目ID 不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long questionId;
 
     /**
@@ -59,7 +64,7 @@ public class AnswerDetailBo extends LsBaseEntity {
     private String userAnswer;
 
     /**
-     * 是否正确（0-错误 1-正确）（适用于自动判分的题型）
+     * 是否正确（0-错误 1-正确）
      */
     private Integer okFlag;
 

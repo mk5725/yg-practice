@@ -1,6 +1,8 @@
 package com.ruoyi.exam.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.ruoyi.exam.domain.dto.ExamPaperData;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -9,6 +11,8 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 import java.math.BigDecimal;
+import java.util.List;
+
 import com.ruoyi.common.core.web.domain.LsBaseEntity;
 
 /**
@@ -40,7 +44,7 @@ public class ExamPaper extends LsBaseEntity {
     /**
      * 考试时长（分钟）
      */
-    private Long duration;
+    private Integer duration;
     /**
      * 试卷总分
      */
@@ -54,5 +58,11 @@ public class ExamPaper extends LsBaseEntity {
      */
     @TableLogic
     private String delFlag;
+
+    /**
+     * 试卷标题 - 题目列表数据
+     */
+    @TableField(exist = false)
+    private List<ExamPaperData> paperTitleList;
 
 }

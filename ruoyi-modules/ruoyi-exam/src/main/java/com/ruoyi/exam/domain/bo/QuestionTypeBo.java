@@ -24,7 +24,7 @@ public class QuestionTypeBo extends LsBaseEntity {
     /**
      * 题目类型ID
      */
-    @NotNull(message = "题目类型ID不能为空", groups = { EditGroup.class })
+    @NotNull(message = "ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long id;
 
     /**
@@ -38,6 +38,4 @@ public class QuestionTypeBo extends LsBaseEntity {
      */
     @NotBlank(message = "类型名称（单选题、多选题、...）不能为空", groups = { AddGroup.class, EditGroup.class })
     private String typeName;
-
-
 }

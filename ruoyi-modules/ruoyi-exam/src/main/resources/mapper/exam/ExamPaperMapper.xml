@@ -1,22 +1,98 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.exam.mapper.ExamPaperMapper">
 
-    <resultMap type="com.ruoyi.exam.domain.ExamPaper" id="ExamPaperResult">
-    <result property="id" column="id"/>
-    <result property="paperName" column="paper_name"/>
-    <result property="paperType" column="paper_type"/>
-    <result property="duration" column="duration"/>
-    <result property="totalScore" column="total_score"/>
-    <result property="passScore" column="pass_score"/>
-    <result property="createTime" column="create_time"/>
-    <result property="updateTime" column="update_time"/>
-    <result property="createUserId" column="create_user_id"/>
-    <result property="updateUserId" column="update_user_id"/>
-    <result property="delFlag" column="del_flag"/>
+    <!-- 完整试卷信息 ResultMap -->
+    <resultMap id="completeExamPaperVoResultMap" type="com.ruoyi.exam.domain.vo.ExamPaperVo">
+        <id property="id" column="id"/>
+        <result property="paperName" column="paper_name"/>
+        <result property="paperType" column="paper_type"/>
+        <result property="duration" column="duration"/>
+        <result property="totalScore" column="total_score"/>
+        <result property="passScore" column="pass_score"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createUserId" column="create_user_id"/>
+
+        <!-- 关联查询 标题列表 -->
+        <collection property="paperTitleList" ofType="com.ruoyi.exam.domain.vo.ExamPaperTitleVo">
+            <id property="id" column="title_id"/>
+            <id property="orderNum" column="title_order"/>
+            <result property="titleName" column="title_name"/>
+
+            <!-- 关联查询 题目列表 -->
+            <collection property="questionList" ofType="com.ruoyi.exam.domain.vo.QuestionVo">
+                <id property="examPaperQuestionId" column="epq_id"/>
+                <id property="id" column="question_id"/>
+                <result property="questionTypeId" column="question_type_id"/>
+                <result property="questionOrder" column="question_order"/>
+                <result property="questionTypeCode" column="question_type_code"/>
+                <result property="questionText" column="question_text"/>
+                <result property="score" column="score"/>
+                <result property="options" column="options"/>
+                <result property="analysis" column="analysis"/>
+                <result property="answer" column="answer"/>
+            </collection>
+        </collection>
     </resultMap>
 
+    <!-- 查询完整试卷信息 (详情) -->
+    <select id="selectCompleteExamPaperById" resultMap="completeExamPaperVoResultMap">
+        SELECT
+            e.id AS id, e.paper_name, e.paper_type, e.duration,
+            e.total_score, e.pass_score, e.create_time, e.update_time,
+            e.create_user_id, e.update_user_id, e.del_flag,
+            t.id AS title_id, t.order_num AS title_order, t.title_name, epq.id AS epq_id,
+            q.id AS question_id, epq.order_sum AS question_order, q.question_type_id, q.question_type_code,
+            q.question_text, q.score, q.`options`, q.answer, q.analysis
+        FROM exam_paper e
+                 LEFT JOIN exam_paper_title t ON t.paper_id = e.id AND t.del_flag = '0'
+                 LEFT JOIN exam_paper_question epq ON epq.title_id = t.id AND epq.del_flag = '0'
+                 LEFT JOIN question q ON q.id = epq.question_id
+        WHERE e.id = #{paperId} AND e.del_flag = '0'
+        ORDER BY t.order_num, epq.order_sum
+    </select>
 
+
+    <!-- 查询题目是否被试卷引用 -->
+    <select id="selectByQuestionId" resultType="com.ruoyi.exam.domain.vo.ExamPaperVo">
+        select p.id, p.paper_name
+        from exam_paper p
+        join exam_paper_question pq on p.id = pq.paper_id
+        <where>
+            p.del_flag = '0'
+            and pq.del_flag = '0'
+            and pq.question_id = #{questionId}
+        </where>
+    </select>
+    <select id="selectByQuestionIds" resultType="com.ruoyi.exam.domain.vo.ExamPaperVo">
+        select p.id, p.paper_name
+        from exam_paper p
+        join exam_paper_question pq on p.id = pq.paper_id
+        <where>
+            p.del_flag = '0'
+            and pq.del_flag = '0'
+            <if test="ids != null">
+                and pq.question_id in
+                <foreach collection="ids" open="(" separator="," close=")" item="id">
+                     #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <resultMap type="com.ruoyi.exam.domain.ExamPaper" id="ExamPaperResult">
+        <result property="id" column="id"/>
+        <result property="paperName" column="paper_name"/>
+        <result property="paperType" column="paper_type"/>
+        <result property="duration" column="duration"/>
+        <result property="totalScore" column="total_score"/>
+        <result property="passScore" column="pass_score"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createUserId" column="create_user_id"/>
+        <result property="updateUserId" column="update_user_id"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
 </mapper>

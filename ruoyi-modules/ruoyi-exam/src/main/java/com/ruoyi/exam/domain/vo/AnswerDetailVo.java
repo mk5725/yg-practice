@@ -33,29 +33,36 @@ public class AnswerDetailVo implements Serializable {
      * 试卷ID（关联 exam_paper.id）
      */
     @ExcelProperty(value = "试卷ID", converter = ExcelDictConvert.class)
-    @ExcelDictFormat(readConverterExp = "关=联,e=xam_paper.id")
+    @ExcelDictFormat(readConverterExp = " =xam_paper.id")
     private Long paperId;
 
     /**
-     * 答题人ID（关联 user.id）
+     * 答题人ID
      */
     @ExcelProperty(value = "答题人ID", converter = ExcelDictConvert.class)
-    @ExcelDictFormat(readConverterExp = "关=联,u=ser.id")
+    @ExcelDictFormat(readConverterExp = " u=ser.id")
     private Long userId;
 
     /**
-     * 考试发放记录ID（关联 exam_send.id）
+     * 考试发放记录ID
+     *
      */
     @ExcelProperty(value = "考试发放记录ID", converter = ExcelDictConvert.class)
-    @ExcelDictFormat(readConverterExp = "关=联,e=xam_send.id")
+    @ExcelDictFormat(readConverterExp = " e=xam_send.id")
     private Long examSendId;
 
     /**
-     * 题目ID（关联 question.id）
+     * 题目ID
      */
     @ExcelProperty(value = "题目ID", converter = ExcelDictConvert.class)
-    @ExcelDictFormat(readConverterExp = "关=联,q=uestion.id")
+    @ExcelDictFormat(readConverterExp = " q=uestion.id")
     private Long questionId;
+
+    /**
+     * 考试记录ID
+     */
+    @ExcelProperty(value = "考试记录ID", converter = ExcelDictConvert.class)
+    private Long recordId;
 
     /**
      * 考生答题内容
@@ -64,7 +71,7 @@ public class AnswerDetailVo implements Serializable {
     private String userAnswer;
 
     /**
-     * 是否正确（0-错误 1-正确）（适用于自动判分的题型）
+     * 是否正确（0-错误 1-正确）
      */
     @ExcelProperty(value = "是否正确", converter = ExcelDictConvert.class)
     @ExcelDictFormat(readConverterExp = "0=-错误,1=-正确")
@@ -77,16 +84,10 @@ public class AnswerDetailVo implements Serializable {
     private BigDecimal score;
 
     /**
-     * 批改时间
-     */
-    @ExcelProperty(value = "批改时间")
-    private Date reviewerTime;
-
-    /**
-     * 提交时间（为空则表示未提交）
+     * 提交时间
      */
     @ExcelProperty(value = "提交时间", converter = ExcelDictConvert.class)
-    @ExcelDictFormat(readConverterExp = "为=空则表示未提交")
+    @ExcelDictFormat(readConverterExp = " 示未提交")
     private Date submitTime;
 
     /**
